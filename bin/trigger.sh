@@ -1108,13 +1108,13 @@ fi
 # OUT: $OUT/$dir/trinity/*.Trinity.fasta.gz
 ################################################################################
 
-#  echo -e "        _       _     _ _"
-#  echo -e "       | |_ ___|_|___|_| |_ _ _"
-#  echo -e "       |  _|  _| |   | |  _| | |"
-#  echo -e "       |_| |_| |_|_|_|_|_| |_  |"
-#  echo -e "   DeNovo Transcriptome    |___|  "
-#  echo -e "   Assembly without a reference genome"
-#  echo -e ""
+  echo -e "        _       _     _ _"
+  echo -e "       | |_ ___|_|___|_| |_ _ _"
+  echo -e "       |  _|  _| |   | |  _| | |"
+  echo -e "       |_| |_| |_|_|_|_|_| |_  |"
+  echo -e "   DeNovo Transcriptome    |___|  "
+  echo -e "   Assembly without a reference genome"
+  echo -e ""
 
 if [ -n "$RUNTRINITY" ]; then
     if [ -z "$NODES_INCHWORM" ] || [ -z "$NCPU_INCHWORM" ] || [ -z "$MEMORY_INCHWORM" ] || [ -z "$WALLTIME_INCHWORM" ] || [ -z "$NODETYPE_INCHWORM" ]; then  echo -e "\e[91m[ERROR]\e[0m Server misconfigured"; exit 1; fi

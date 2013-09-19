@@ -1,21 +1,63 @@
 ##############################################################
 # System info
 ##############################################################
-SUBMISSIONSYSTEM="PBS"                            # SGE or PBS
-QUEUEWAIT=" -W depend=afterok:"                   # PBS
-QUEUEWAITSEP=":"
-#QUEUEWAIT=" -hold_jid "                          # SGE
-#QUEUEWAITSEP=","       
-DMGET=""                    # or Yes when storing data on tape
-TMP=$(pwd)/tmp                                       # TMP dir
+SUBMISSIONSYSTEM="SGE"                            # SGE or PBS
+#QUEUEWAIT=" -W depend=afterok:"                   # PBS
+#QUEUEWAITSEP=":"
+QUEUEWAIT=" -hold_jid "                          # SGE
+QUEUEWAITSEP=","       
+#DMGET=""                    # or Yes when storing data on tape
+TMP=/share/Temp                                       # TMP dir
+NODE_TMP=/temp
 
 ##############################################################
 # SUN GRID ENGINE specific workaround for BUG (SGE 6.2u5)
 ##############################################################
 ## uncomment if running on SGE
-#. /etc/profile.d/modules.sh
+. /etc/profile.d/modules.sh
 ## uncomment within CSIRO
 #module use /apps/gi/modulefiles
+
+NG_R="gi/R/3.0.0"
+NG_PYTHON="fabbus/python/2.7.3"
+NG_GZIP="gi/pigz/2.3"
+NG_JAVA="kevyin/java/1.7.0_25"
+NG_FASTQC="gi/fastqc/0.10.1"
+NG_SAMTOOLS="gi/samtools/0.1.19"
+NG_IGVTOOLS="gi/igvtools/2.3.5"
+NG_GATK="gi/gatk/2.5"
+NG_BWA="gi/bwa/0.7.4"
+NG_IMAGEMAGIC="gi/ImageMagick/6.8.5-8"
+NG_PICARD="gi/picard-tools/1.91"
+NG_SAMSTAT="gi/samstat/1.08"
+NG_UCSCTOOLS="gi/ucsc_utils/283"
+NG_BEDTOOLS="gi/bedtools/2.17.0"
+NG_BOWTIE="gi/bowtie/1.0.0"
+NG_BOWTIE2="gi/bowtie/2.1.0"
+NG_BOOST="gi/boost/1.53.0"
+NG_PEAKRANGER="gi/peakranger/1.16"
+NG_MEME="gi/meme/4.9.0_4"
+NG_TOPHAT="gi/tophat/2.0.9"
+NG_RNASEQC="gi/rnaseqc/1.1.7"
+NG_CUFFLINKS="gi/cufflinks/2.1.1"
+NG_MONO="gi/mono/3.2.1"
+NG_BLUE="gi/blue/1.0.1"
+NG_PERL="fabbus/perl/5.14.2"
+NG_PRINCE="gi/prince/9.0r2"
+NG_WIGGLER="fabbus/wiggler/2.0"
+NG_HOMER="gi/homer/4.2"
+NG_CUTADAPT="fabbus/cutadapt/1.2.1"
+NG_TRIMGALORE="fabbus/trimgalore/0.2.8"
+NG_TRIMMOMATIC="gi/trimmomatic/0.30"
+NG_HDF5="gi/hdf5/1.8.10-patch1"
+NG_HICLIB="fabbus/hiclib/30_04_13"
+NG_HICUP="fabbus/hicup/0.3.0"
+NG_FITHIC="fabbus/fit-hi-c/28_12_2012"
+NG_FASTQSCREEN="gi/fastq_screen/0.4.1"
+NG_MATLAB="fabbus/matlab/mcr2012b"
+NG_CHANCE="fabbus/chance/com gi/R/3.0.0"
+NG_PARALLEL="gi/gnu_parallel/20130822"
+NG_TRINITY="marsmi/trinityrnaseq/2013-02-25"
 
 ##############################################################
 # Task Names
@@ -50,10 +92,6 @@ TASKHOMERCHIPSEQ="homerchipseq"
 TASKPEAKRANGER="peakranger"
 TASKMACS2="macs2"
 TASKMEMECHIP="memechip"
-TASKTRINITY="trinity"
-TASKINCHWORM="trinity_inchworm"
-TASKCHRYSALIS="trinity_chrysalis"
-TASKBUTTERFLY="trinity_butterfly"
 TASKFASTQSCREEN="fastqscreen"
 TASKBIGWIG="bigwig"
 TASKBLUE="blue"
@@ -79,8 +117,8 @@ PATH_SAMSTAT=
 PATH_FASTXTK=
 
 # Commonly used file abbreviations
-READONE="_read1"
-READTWO="_read2"
+READONE="read1"
+READTWO="read2"
 FASTQ="fastq.gz"
 FASTA=            # fasta file usually from the reference genome
 FASTA_CHROMDIR=   # folder containing individual fasta files for each chromosome of the reference genome 
@@ -92,7 +130,7 @@ MUL="mul"   # non-unique aligned
 ASD="asd"   # aligned sorted duplicate-removed
 ASR="asdrr" # aligned sorted duplicate-removed raligned recalibrated
 
-MODULES_DEFAULT=
+MODULES_DEFAULT="rocks-openmpi kevyin/java/1.7.0_25"
 for MODULE in $MODULES_DEFAULT; do module load $MODULES_DEFAULT; done
 
 ##############################################################
@@ -105,8 +143,8 @@ HTMLOUT="Summary"
 ##############################################################
 # gzip alternatives, e.g.
 # pigz (2.3) - http://zlib.net/pigz/
-MODULE_GZIP=${NG_GZIP}
-GZIP="gzip -9"			# command, e.g. gzip or pigz
+MODULE_GZIP="${NG_GZIP}"
+GZIP="pigz -9"			# command, e.g. gzip or pigz
 [ -n "$MODULE_GZIP" ] && module load $MODULE_GZIP
 
 ##############################################################
@@ -140,7 +178,7 @@ CPU_BWA=32
 NODES_BWA="nodes=4:ppn=8"
 INPUT_BWA="fastq"
 MODULE_BWA="${NG_BWA} ${NG_JAVA} ${NG_SAMTOOLS} ${NG_IGVTOOLS} ${NG_R} ${NG_IMAGEMAGIC} ${NG_PICARD} ${NG_SAMSTAT} ${NG_UCSCTOOLS} ${NG_BEDTOOS}"
-PATH_BWA=
+PATH_BWA=$PATH_IGVTOOLS:$PATH_PICARD:$PATH_SAMSTAT
 
 ##############################################################
 # Bowtie (1.0.0)
@@ -156,6 +194,7 @@ PATH_BOWTIE=$PATH_IGVTOOLS:$PATH_PICARD:$PATH_SAMSTAT
 ##############################################################
 # Bowtie2 (2.1.0) 
 # http://bowtie-bio.sourceforge.net/index.shtml
+
 WALLTIME_BOWTIE2=72:00:00
 MEMORY_BOWTIE2=60
 CPU_BOWTIE2=8
@@ -195,7 +234,7 @@ WALLTIME_HOMERCHIPSEQ=12:00:00
 MEMORY_HOMERCHIPSEQ=20
 CPU_HOMERCHIPSEQ=1
 NODES_HOMERCHIPSEQ="nodes=1:ppn=1"
-INPUT_HOMERCHIPSEQ=$TASKBOWTIE
+
 MODULE_HOMERCHIPSEQ="${NG_HOMER} ${NG_JAVA} ${NG_R} ${NG_SAMTOOLS} ${NG_PERL}"
 PATH_HOMERCHIPSEQ=
 
@@ -232,7 +271,7 @@ INPUT_MEMECHIP=$TASKMACS2
 MODULE_MEMECHIP="${NG_MEME} ${NG_BEDTOOLS} ${NG_PERL}"
 PATH_MEMECHIP=
 
-MEMECHIPDATABASES=
+MEMECHIPDATABASES="/share/ClusterShare/software/contrib/gi/meme/4.9.0_4/db/motif_databases/jolma2013.meme"
 
 ##############################################################
 # Trim adapter with CUTADAPT ()
@@ -309,7 +348,7 @@ MODULE_CUFFLINKS="${NG_CUFFLINKS}"
 PATH_CUFFLINKS=
 
 ##############################################################
-# HTSEQ-count (0.5.4.p3)
+# HTSEQ-count (0.5.4.p3) 
 # http://www-huber.embl.de/users/anders/HTSeq/doc/index.html
 WALLTIME_HTSEQCOUNT=24:00:00
 MEMORY_HTSEQCOUNT=50
@@ -364,7 +403,7 @@ CPU_RECAL=8
 NODES_RECAL="nodes=1:ppn=8" 
 INPUT_REALRECAL=$TASKBWA
 MODULE_RECAL="${NG_JAVA} ${NG_GATK} ${NG_R} ${NG_SAMTOOLS} ${NG_IGVTOOLS}"
-PATH_RECAL=
+PATH_RECAL=$PATH_IGVTOOLS:$PATH_SAMTOOLS
 
 ##############################################################
 # reduced representation bisulfite sequencing mapping 
@@ -396,46 +435,9 @@ MEMORY_DEMULTIPLEX=20
 CPU_DEMULTIPLEX=1
 NODES_DEMULTIPLEX="nodes=1:ppn=1"
 
-MODULE_DEMULTIPLEX=
+MODULE_DEMULTIPLEX="gi/fastx_toolkit/0.0.13.2"
 PATH_DEMULTIPLEX=$PATH_FASTXTK
 
-##############################################################
-# RNA-Seq De novo Assembly Using Trinity
-# http://trinityrnaseq.sourceforge.net/
-
-### Stage P1: Time and resources required for Inchworm stage
-### Only use at maximum, half the available CPUs on a node 
-# - Inchworm will not efficiently use any more than 4 CPUs and you will have to take longer for resources to be assigned
-# —min_kmer_cov 2 to reduce memory requirements with large read sets.
-WALLTIME_INCHWORM="4:00:00"		# optional on Wolfpack 
-MEMORY_INCHWORM="40" 			# will use it for --JM
-NCPU_INCHWORM="4" 				# Use less than half of the CPUs on a node. This algorithm is limited by cache memory
-NODES_INCHWORM="1"
-NODETYPE_INCHWORM="all.q"  		
-#NODETYPE_INCHWORM="intel.q" 	# Inchworm performs faster when Trinity was installed using the Intell compiler (Intell systems only
-
-### Stage P2: Time and resources required for Chrysalis stage
-### Starts with Bowtie alignment and post-processing of alignment file
-### All CPUs presenct can be used for the Chrysalis parts. 
-#They may take a while to be provisioned, so the less request, possibly the faster the jobs turnaround.
-# For one step (the parallel sort) it needs as much memory as specified in P1. Less memory, means more I/O for sorting
-WALLTIME_CHRYSALIS="24:00:00"		# optional on Wolfpack 
-MEMORY_CHRYSALIS="40"	 			# will use it for --JM
-NCPU_CHRYSALIS="16" 				# For very large datasets, besides normalisation, maybe use 32 cores
-NODES_CHRYSALIS="1"
-NODETYPE_CHRYSALIS="all.q"  		# dont use intel.q on Wolfpack for this
-
-# This stage is actually Chrysalis::readsToTranscript and Butterfly. Both should ideally be run through a SGE/PBS array 
-# The Chrysalis bit is I/O heavy, so a local memory node is used. If files take up over 500GB, this will cause problems. 
-# You may want to normalise your data and/or run Martin's optimised, standalone Trinity module
-WALLTIME_BUTTERFLY="72:00:00"		
-MEMORY_BUTTERFLY="40"	 			
-NCPU_BUTTERFLY="32" 				
-NODES_BUTTERFLY="1"
-NODETYPE_BUTTERFLY="all.q"  		
-
-MODULES_TRINITY=
-PATH_TRINITY=
 
 ##############################################################
 # Screen reads against multiple indices
@@ -498,7 +500,7 @@ PATH_POOLBAMS=$PATH_IGVTOOLS:$PATH_PICARD:$PATH_SAMSTAT
 # RNA-Seq De novo Assembly Using Trinity
 # http://trinityrnaseq.sourceforge.net/
 
-### Stage 1: Time and resources required for Inchworm stage
+### Stage P1: Time and resources required for Inchworm stage
 ### Only use at maximum, half the available CPUs on a node
 # - Inchworm will not efficiently use any more than 4 CPUs and you will have to take longer for resources to be assigned
 # —min_kmer_cov 2 to reduce memory requirements with large read sets.
@@ -507,10 +509,9 @@ MEMORY_INCHWORM="40"                    # will use it for --JM
 NCPU_INCHWORM="4"                               # Use less than half of the CPUs on a node. This algorithm is limited by cache memory
 NODES_INCHWORM="1"
 NODETYPE_INCHWORM="all.q"
-INPUT_INCHWORM="fastq"
 #NODETYPE_INCHWORM="intel.q"    # Inchworm performs faster when Trinity was installed using the Intell compiler (Intell systems only
 
-### Stage 2: Time and resources required for Chrysalis stage
+### Stage P2: Time and resources required for Chrysalis stage
 ### Starts with Bowtie alignment and post-processing of alignment file
 ### All CPUs presenct can be used for the Chrysalis parts.
 #They may take a while to be provisioned, so the less request, possibly the faster the jobs turnaround.
@@ -520,9 +521,8 @@ MEMORY_CHRYSALIS="40"                           # will use it for --JM
 NCPU_CHRYSALIS="16"                             # For very large datasets, besides normalisation, maybe use 32 cores
 NODES_CHRYSALIS="1"
 NODETYPE_CHRYSALIS="all.q"              # dont use intel.q on Wolfpack for this
-INPUT_CHRYSALIS="fastq"
 
-# Stage 3: Chrysalis::readsToTranscript and Butterfly. Both should ideally be run through a SGE/PBS array
+# This stage is actually Chrysalis::readsToTranscript and Butterfly. Both should ideally be run through a SGE/PBS array
 # The Chrysalis bit is I/O heavy, so a local memory node is used. If files take up over 500GB, this will cause problems.
 # You may want to normalise your data and/or run Martin's optimised, standalone Trinity module
 WALLTIME_BUTTERFLY="72:00:00"
@@ -530,8 +530,6 @@ MEMORY_BUTTERFLY="40"
 NCPU_BUTTERFLY="32"
 NODES_BUTTERFLY="1"
 NODETYPE_BUTTERFLY="all.q"
-INPUT_BUTTERFLY="fastq"
 
-MODULES_TRINITY="${NG_TRINITY} ${NG_BOWTIE} ${NG_JAVA}"
+MODULES_TRINITY="${NG_TRINITY} ${NG_BOWTIE} ${NG_JAVA}" #marsmi/java/1.6.0_37
 PATH_TRINITY=
-
