@@ -13,7 +13,7 @@
 ###	NGSane configuration file for script to split the Trinity workflow into multiple stages so as to 
 ###	efficiently request and use appropriate resources (walltime and number of cores) on a computer cluster / supercomputer.
 ###	This should increase the speed of Trinity de-novo RNAseq assembly without a reference genome drastically
-###	Inspired by the Trinity PBS utile written by Josh Bowden, CSIRO IM&T and Alexie Papanicolaou CSIRO CES
+###	Inspired by the Trinity PBS util written by Josh Bowden, CSIRO IM&T and Alexie Papanicolaou CSIRO CES
 ###
 ###	User must set all the variables in this file to appropriate values 
 ###	Additional NGSane analysis mods will be written soon. 
@@ -43,8 +43,8 @@
 ## This must be set to 1, NGSane obliges.
 RUNTRINITY="1"
 ## Leave these for now; if declaration is removed, the selected task won't be performed.  
- RUNINCHWORM=
- RUNCHRYSALIS=
+ RUNINCHWORM="1"
+ RUNCHRYSALIS="1"
  RUNBUTTERFLY="1"
 
 ## Remove ALL intermediate files. Avoid this.... 
@@ -53,8 +53,8 @@ CLEANUP="0"
 ## For significant performance boosts, this NGSane variable should point to a local folder on the 
 ## compute node as Chrysalis requires large amounts of I/O 
 ## There should also be at least 250 GB available, depending on the complexity of your data. 
-TMP=/share/Temp 
-NODE_TMP=/temp   		# compute node temp folder (500MB on Wolfpack)
+#TMP=/share/Temp 		# defined in [sample_]header.sh
+NODE_TMP=/temp   		# compute node temp folder (500MB on Wolfpack) !!! Highly recommended to set this accordingly !!!
 
 ########################################################################
 #			Job parameters *** MANDATORY *** 
@@ -100,7 +100,7 @@ FASTQ="fq.gz"
 #NODES_INCHWORM="1"
 #NODETYPE_INCHWORM="all.q"  		
 #NODETYPE_INCHWORM="intel.q" 	# Inchworm performs faster when Trinity was installed using the Intell compiler (Intell systems only
-
+#INPUT_INCHWORM="fastq"
 
 ### Stage P2: Time and resources required for Chrysalis stage
 ### Starts with Bowtie alignment and post-processing of alignment file

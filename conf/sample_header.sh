@@ -59,6 +59,10 @@ TASKBIGWIG="bigwig"
 TASKBLUE="blue"
 TASKCHANCE="chance"
 TASKPOOLBAMS="pooledbam"
+TASKTRINITY="trinity"
+TASKINCHWORM="inchworm"
+TASKCHRYSALIS="chrysalis"
+TASKBUTTERFLY="butterly"
 
 ##############################################################
 # PROGRAM PATHS
@@ -494,7 +498,7 @@ PATH_POOLBAMS=$PATH_IGVTOOLS:$PATH_PICARD:$PATH_SAMSTAT
 # RNA-Seq De novo Assembly Using Trinity
 # http://trinityrnaseq.sourceforge.net/
 
-### Stage P1: Time and resources required for Inchworm stage
+### Stage 1: Time and resources required for Inchworm stage
 ### Only use at maximum, half the available CPUs on a node
 # - Inchworm will not efficiently use any more than 4 CPUs and you will have to take longer for resources to be assigned
 # —min_kmer_cov 2 to reduce memory requirements with large read sets.
@@ -506,7 +510,7 @@ NODETYPE_INCHWORM="all.q"
 INPUT_INCHWORM="fastq"
 #NODETYPE_INCHWORM="intel.q"    # Inchworm performs faster when Trinity was installed using the Intell compiler (Intell systems only
 
-### Stage P2: Time and resources required for Chrysalis stage
+### Stage 2: Time and resources required for Chrysalis stage
 ### Starts with Bowtie alignment and post-processing of alignment file
 ### All CPUs presenct can be used for the Chrysalis parts.
 #They may take a while to be provisioned, so the less request, possibly the faster the jobs turnaround.
@@ -518,7 +522,7 @@ NODES_CHRYSALIS="1"
 NODETYPE_CHRYSALIS="all.q"              # dont use intel.q on Wolfpack for this
 INPUT_CHRYSALIS="fastq"
 
-# This stage is actually Chrysalis::readsToTranscript and Butterfly. Both should ideally be run through a SGE/PBS array
+# Stage 3: Chrysalis::readsToTranscript and Butterfly. Both should ideally be run through a SGE/PBS array
 # The Chrysalis bit is I/O heavy, so a local memory node is used. If files take up over 500GB, this will cause problems.
 # You may want to normalise your data and/or run Martin's optimised, standalone Trinity module
 WALLTIME_BUTTERFLY="72:00:00"
