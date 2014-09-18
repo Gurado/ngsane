@@ -276,7 +276,7 @@ if [[ $(NGSANE_CHECKPOINT_TASK) == "start" ]]; then
         
     RUN_COMMAND="java $JAVAPARAMS -jar $PATH_PICARD/CleanSam.jar \
         I=$THISTMP/$SAMPLE.rg.bam \
-        O=$BAMFILE \
+        O=$OUTDIR/$SAMPLE.cleaned.bam \
         CREATE_MD5_FILE=true \
         COMPRESSION_LEVEL=9 \
         VALIDATION_STRINGENCY=SILENT \
@@ -286,8 +286,37 @@ if [[ $(NGSANE_CHECKPOINT_TASK) == "start" ]]; then
     rm $THISTMP/$SAMPLE.rg.bam
 
     # mark checkpoint
-    NGSANE_CHECKPOINT_CHECK $BAMFILE
+    NGSANE_CHECKPOINT_CHECK $OUTDIR/$SAMPLE.cleaned.bam
 fi 
+
+
+################################################################################
+NGSANE_CHECKPOINT_INIT "mark duplicates"
+# create bam files for discarded reads and remove fastq files
+if [[ $(NGSANE_CHECKPOINT_TASK) == "start" ]]; then
+   
+    if [ ! -e $OUTDIR/metrices ]; then mkdir -p $OUTDIR/metrices ; fi
+    java $JAVAPARAMS -jar $PATH_PICARD/MarkDuplicates.jar \
+        INPUT=$OUTDIR/$SAMPLE.cleaned.bam \
+        OUTPUT=$BAMFILE \
+        METRICS_FILE=$OUTDIR/metrices/$SAMPLE$ASD.bam.dupl AS=true \
+        CREATE_MD5_FILE=true \
+        COMPRESSION_LEVEL=9 \
+        VALIDATION_STRINGENCY=LENIENT \
+        TMP_DIR=$THISTMP
+    samtools index $BAMFILE
+          
+    # mark checkpoint
+    NGSANE_CHECKPOINT_CHECK $BAMFILE
+    
+    #cleanup
+    [ -e $OUTDIR/$SAMPLE.cleaned.bam ] && rm $OUTDIR/$SAMPLE.cleaned.bam
+    
+fi
+
+################################################################################
+
+
 
 ################################################################################
 NGSANE_CHECKPOINT_INIT "flagstat"
