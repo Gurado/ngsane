@@ -1,7 +1,6 @@
 NGSANE := $(shell trigger.sh -v 2>/dev/null)
 
-all: checkNGSANE result/SummaryCHIPSEQ.html result/SummaryTOPHATCUFFHTSEQ.html  result/SummaryVARCALLS.html result/SummaryHIC.html 
-# result/SummaryRNASEQ.html
+all: checkNGSANE result/SummaryCHIPSEQ.html result/SummaryTOPHATCUFFHTSEQ.html  result/SummaryVARCALLS.html result/SummaryHIC.html result/SummaryRNASEQ.html
 
 checkNGSANE:
 ifdef NGSANE
@@ -68,3 +67,4 @@ clean:
 	rm -f referenceData/chr16_RNAseqcopy.*
 	rm -f hs_err_pid*
 	rm -rf A1 A2 A3 B1 B2 B3 RNA3kChr16 RNA3kChr16rep 
+	rm -rf expression featann
