@@ -25,10 +25,10 @@ while [ "$1" != "" ]; do
 	--postmemory )          shift; POSTMEMORY=$1;; # Memory used for postcommand
 	--postwalltime )        shift; POSTWALLTIME=$1;;
 	-r | --reverse )        REV="1";;              # input is fastq
-	-d | --nodir )          NODIR="nodir";;        # create no output directory
+	-d | --nodir )          NODIR="nodir";;
 	-a | --armed )          ARMED="armed";;
-	-W | --wait )           shift; JOBIDS=$1 ;;    # jobids to wait for
-	--commontask )          shift; COMMONTASK=$1;; # name of a task common to multiple libraries
+    -W | --wait )           shift; JOBIDS=$1 ;;    # jobids to wait for
+    --commontask )          shift; COMMONTASK=$1;; # name of a task common to multiple libraries
 	--keep )                KEEP="keep";;
 	--new )                 KEEP="new";;
 	--recover )             RECOVER="recover";;
@@ -37,7 +37,7 @@ while [ "$1" != "" ]; do
 	--first )               FIRST="first";;
 	--postonly )            POSTONLY="postonly" ;;
 	--dryrun )              DRYRUN="TRUE" ;;
-	--givenDirs )		    shift; GIVENDIRS=$1 ;;	# given directories instead of Dir from config
+	--givenDirs )			shift; GIVENDIRS=$1 ;;			# given directories instead of Dir from config
 	-h | --help )           usage ;;
 	* )                     echo "prepareJobSubmission.sh: don't understand "$1
     esac
@@ -92,7 +92,8 @@ if [[ ! -e $QOUT/$TASK/runnow.tmp || "$KEEP" || "$DEBUG" ]]; then
                 	COMMANDARR=(${COMMAND// / })
                 	DUMMY="echo "$(egrep "^# *RESULTFILENAME" ${COMMANDARR[0]} | cut -d " " -f 3- | sed "s/<SAMPLE>/$name/" | sed "s/<DIR>/$DIRNAME/" | sed "s/<TASK>/$TASK/")
                     D=$(eval $DUMMY)
-                	if [ -n "$D" ] && [ -f $D ] && [[ $(egrep "^>{5} .* FINISHED" $LOGFILE | wc -l ) -gt 0 ]] ; then 
+                    # skip if either result file exist and log finished or resultfiles is not specified and log finished
+                	if [[ -n "$D" ]] && [[ -f $D ]] && [[ $(egrep "^>{5} .* FINISHED" $LOGFILE | wc -l ) -gt 0 ]] || [[ -z "$D" ]] && [[ $(egrep "^>{5} .* FINISHED" $LOGFILE | wc -l ) -gt 0 ]] ; then 
                 	   echo -e "\e[34m[SKIP]\e[0m $n (already processed: $DIRNAME/${D##*/})"  
                 	   continue
                     fi
@@ -201,12 +202,12 @@ for i in $(cat $QOUT/$TASK/runnow.tmp); do
                 sed -i "s/^\[ERROR\] /[NOTE][PREVIOUS][ERROR] /g" $LOGFILE
                 echo "[NOTE] Previous errors masked" >> $LOGFILE
             fi
-           
+            
         else
             # remove old submission output logs
             if [ -e $QOUT/$TASK/$dir'_'$name.out ]; then rm $QOUT/$TASK/$dir'_'$name.out; fi
         fi
-
+    
 
 
         echo "[NOTE] Jobfile: "$(python -c "import os.path; print os.path.relpath(os.path.realpath('$JOBLOG'),'$(pwd -P)')") >> $LOGFILE
