@@ -111,10 +111,10 @@ if [[ $(NGSANE_CHECKPOINT_TASK) == "start" ]]; then
     
     [ -f $OUTDIR/$SAMPLE.summary.txt ] && rm $OUTDIR/$SAMPLE.summary.txt
     
-    RUN_COMMAND="peakranger nr --format bam --data $f --control $CHIPINPUT | tr ':' '\t' > $OUTDIR/$SAMPLE.summary.txt"
+    RUN_COMMAND="peakranger nr --format bam --data $f --control $CHIPINPUT > $OUTDIR/$SAMPLE.summary.txt"
     echo $RUN_COMMAND && eval $RUN_COMMAND
 
-    RUN_COMMAND="peakranger lc --data $f | tr ':' '\t' >> $OUTDIR/$SAMPLE.summary.txt"
+    RUN_COMMAND="peakranger lc --data $f >> $OUTDIR/$SAMPLE.summary.txt"
     echo $RUN_COMMAND && eval $RUN_COMMAND
     
     # mark checkpoint
@@ -125,7 +125,7 @@ fi
 NGSANE_CHECKPOINT_INIT "peakranger"
 
 if [[ $(NGSANE_CHECKPOINT_TASK) == "start" ]]; then
-
+   
     if [ "$PEAKRANGER_PEAKS" == "broad" ]; then
         echo "[NOTE] calling broad peaks"
         RUN_COMMAND="peakranger ccat $PEAKRANGERADDPARAM --format bam --data $f --control $CHIPINPUT --output $OUTDIR/$SAMPLE -t $CPU_PEAKRANGER"
@@ -144,7 +144,7 @@ if [[ $(NGSANE_CHECKPOINT_TASK) == "start" ]]; then
     mv $OUTDIR/$SAMPLE"_summit.tmp" $OUTDIR/$SAMPLE"_summit.bed"
     
     echo "Peaks: $(wc -l $OUTDIR/${SAMPLE}_region.bed | awk '{print $1}')" >> $OUTDIR/$SAMPLE.summary.txt
-    echo "Nucleotides covered: $(awk '{sum+=$3-$2}END{print sum}' $OUTDIR/${SAMPLE}_region.bed)" >> $OUTDIR/$SAMPLE.summary.txt
+    echo "Nucleotides covered: $(awk '{sum+=$3-$2}END{sum>0?sum=sum:sum=0; print sum}' $OUTDIR/${SAMPLE}_region.bed)" >> $OUTDIR/$SAMPLE.summary.txt
     echo "ChIP input: $CONTROL" >> $OUTDIR/$SAMPLE.summary.txt
 
     # make bigbed
@@ -155,7 +155,7 @@ if [[ $(NGSANE_CHECKPOINT_TASK) == "start" ]]; then
     fi
     
     # mark checkpoint
-    NGSANE_CHECKPOINT_CHECK $OUTDIR/${SAMPLE}_region.bed
+    NGSANE_CHECKPOINT_CHECK $OUTDIR/${SAMPLE}_details
 
 fi
 
