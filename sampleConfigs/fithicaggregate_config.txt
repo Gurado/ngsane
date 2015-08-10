@@ -74,21 +74,17 @@ HICORRECTOR_MAXITER=100
 # e.g. "inputIsFragmentPairs" or "inputIsReadPairs 2,3,6,7,chr"
 FITHIC_START_FROM_FRAGMENTPAIRS=
 
+# optional parameters to pass to fithic
+# FITHICADDPARAM="--lowerbound 5000 --upperbound 5000000 --plotImages"
+FITHICADDPARAM=
+
 # Q-value threshold applied for filtering (default: 0.01)
 # e.g. 0.05
 FITHIC_QVALUETHRESHOLD=
 
-# Whether to focus on intra-chromosomal contacts only
-# e.g. FITHIC_CISONLY=1
+# Whether to focus on intra-chromosomal contacts only when running bias
+# # correction
 FITHIC_CISONLY=
-
-# indicate if contact matrix should be kept
-# e.g FITHIC_KEEPCONTACTMATRIX="1"
-FITHIC_KEEPCONTACTMATRIX=
-
-# Whether to call TADs and on which chromosomes (required TADbit)
-# e.g. "chr[0-9]*"
-CALL_TAD_CHROMOSOMES=
 
 #WALLTIME_FITHIC=48:00:00
 #MEMORY_FITHIC=40
